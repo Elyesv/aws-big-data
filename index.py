@@ -1,4 +1,4 @@
-
+import boto3
 from decimal import Decimal
 from boto3.session import Session 
 from boto3.dynamodb.conditions import (
@@ -138,6 +138,127 @@ class DynamoDB:
         )
         return response['Items']
     
+    def update_movie(self):
+        table = self.ressource.Table(self.table_name)
+        response = table.update_item(
+            Key={
+                'movie_id': "uuid-1",
+                'release_year': 2010
+            },
+            UpdateExpression="set rating = :r",
+            ExpressionAttributeValues={
+                ':r': Decimal(str(9.0))
+            },
+            ReturnValues="UPDATED_NEW"
+        )
+        return response
+    
+    def delete_movie(self):
+        table = self.ressource.Table(self.table_name)
+        try:
+            response = table.delete_item(
+                Key={
+                    'movie_id': "uuid-2",
+                    'release_year': 1999
+                }
+            )
+        except Exception as e:
+            print(e.response['Error']['Message'])
+        else:
+            return response
+
+    def add_movie_awards(self, movie_id, release_year, awards):
+        table = self.ressource.Table(self.table_name)
+        response = table.update_item(
+            Key={
+                'movie_id': movie_id,
+                'release_year': release_year
+            },
+            UpdateExpression="set awards = :a",
+            ExpressionAttributeValues={
+                ':a': awards
+            },
+            ReturnValues="UPDATED_NEW"
+        )
+        return response
+    
+    def get_long_movies(self, ):
+        table = self.ressource.Table(self.table_name)
+        regex = Attr('details.duration').gt(Decimal(str(150)))
+        response = table.scan(
+            FilterExpression=regex
+        )
+        return response['Items']
+    
+    def count_movies(self):
+        table = self.ressource.Table(self.table_name)
+        response = table.scan()
+        return response['Count']
+    
+    def get_movies_by_genre_and_year(self, genre, year):
+        table = self.ressource.Table(self.table_name)
+        response = table.query(
+            IndexName='GenreIndex',
+            KeyConditionExpression=Key('genre').eq(genre),
+            FilterExpression=Attr('release_year').gt(Decimal(str(year)))
+        )
+        return response['Items']
+    
+    def get_movies_starting_with_I(self, letter='I'):
+        table = self.ressource.Table(self.table_name)
+        filtering_exp = Attr('title').begins_with(letter)
+        response = table.scan(
+            FilterExpression=filtering_exp
+        )
+        return response['Items']
+    
+    def add_release_date_index(self):
+        client = boto3.client('dynamodb')
+        response = client.update_table(
+            TableName=self.table_name,
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'movie_id',
+                    'AttributeType': 'S'
+                },
+                {
+                    'AttributeName': 'release_year',
+                    'AttributeType': 'N'
+                },
+                {
+                    'AttributeName': 'genre',
+                    'AttributeType': 'S'
+                }
+            ],
+            GlobalSecondaryIndexUpdates=[
+                {
+                    'Create': {
+                        'IndexName': 'GenreYearIndex',
+                            'KeySchema': [
+                                {
+                                    'AttributeName': 'genre',
+                                    'KeyType': 'HASH'
+                                },
+                                {
+                                    'AttributeName': 'release_year',
+                                    'KeyType': 'RANGE'
+                                }
+                            ],
+                            'Projection': {
+                                'ProjectionType': 'ALL',
+                            },
+                            'ProvisionedThroughput': {
+                                'ReadCapacityUnits': 10,
+                                'WriteCapacityUnits': 10,
+                            }
+                    },
+                    
+                },
+            ],
+        )
+        return response
+
+    
 def main():
     ddb = DynamoDB()
     ddb.insert_movie()
@@ -183,7 +304,29 @@ def main():
     # movies = ddb.get_movies_with_high_rating(8.5)
     # for movie in movies:
     #     print(movie)
+    
+    # ddb.update_movie()
 
+    # ddb.delete_movie()
+    
+    # ddb.add_movie_awards("uuid-1", 2010, {"oscars": 4})
+
+    # movies = ddb.get_long_movies()
+    # for movie in movies:
+    #     print(movie)
+    
+    # count = ddb.count_movies()
+    # print(f"Total number of movies: {count}")
+    
+    # ddb.add_release_date_index()
+    
+    # movies = ddb.get_movies_by_genre_and_year("Sci-Fi", 2000)
+    # for movie in movies:
+    #     print(movie)
+    
+    # movies = ddb.get_movies_starting_with_I()
+    # for movie in movies:
+    #     print(movie)
     
 if __name__ == "__main__":
     main()
