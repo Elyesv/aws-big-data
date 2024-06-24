@@ -122,6 +122,22 @@ class DynamoDB:
         )
         return response['Items']    
         
+    def get_movies_after_year(self, year):
+        table = self.ressource.Table(self.table_name)
+        regex = Attr('release_year').gt(year)
+        response = table.scan(
+            FilterExpression=regex
+        )
+        return response['Items'] 
+
+    def get_movies_with_high_rating(self, rating):
+        table = self.ressource.Table(self.table_name)
+        regex = Attr('rating').gt(Decimal(str(rating)))
+        response = table.scan(
+            FilterExpression=regex
+        )
+        return response['Items']
+    
 def main():
     ddb = DynamoDB()
     ddb.insert_movie()
@@ -157,6 +173,14 @@ def main():
     # print(movie)
     
     # movies = ddb.get_movies_by_genre("Sci-Fi")
+    # for movie in movies:
+    #     print(movie)
+    
+    # movies = ddb.get_movies_after_year(2000)
+    # for movie in movies:
+    #     print(movie)
+    
+    # movies = ddb.get_movies_with_high_rating(8.5)
     # for movie in movies:
     #     print(movie)
 
