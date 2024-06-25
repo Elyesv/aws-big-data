@@ -2,7 +2,7 @@ import time
 
 def handler():
 
-    with open('texte.txt', 'r') as file:
+    with open('text.txt', 'r') as file:
         text = file.read().replace('\n', '').replace('.', '').replace(',','').lower()
         list_words = text.split(' ')
     
