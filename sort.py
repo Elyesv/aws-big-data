@@ -1,4 +1,5 @@
 import time
+import random
 
 def handler():
 
@@ -6,10 +7,10 @@ def handler():
         text = file.read().replace('\n', '').replace('.', '').replace(',','').lower()
         list_words = text.split(' ')
     
-        len_list_words = len(list_words)
-        print('Number of words in the text: ', len_list_words)
+        # len_list_words = len(list_words)
+        # print('Number of words in the text: ', len_list_words)
         
-        print('-' * 50)
+        # print('-' * 50)
         
         # start_time = time.time()
         # for _ in range(1):
@@ -38,23 +39,53 @@ def handler():
         
         # print('-' * 50)
 
+        # start_time = time.time()
+        # for _ in range(50):
+        #     sorted_list = shell_sort(list_words)
+        #     # print(sorted_list)
+        # end_time = time.time()
+        # print('Average execution time to sort the list (shell sort): ', (end_time - start_time), 'seconds')
+        
+        # print('-' * 50)
+        
+        # start_time = time.time()
+        # for _ in range(50):
+        #     sorted_list = quick_sort(list_words)
+        #     # print(sorted_list)
+        # end_time = time.time()
+        # print('Average execution time to sort the list (quick sort): ', (end_time - start_time), 'seconds')
+        
+        # print('-' * 50)
+        
         start_time = time.time()
-        for _ in range(50):
-            sorted_list = shell_sort(list_words)
-            # print(sorted_list)
+        set = generate_set()
+        # print('The set is: ', set)
+        for _ in range(1000):
+            pair, product = max_product_Ne2(set)
         end_time = time.time()
-        print('Average execution time to sort the list (shell sort): ', (end_time - start_time), 'seconds')
+        print('The pair is: ', pair, ' and the product is: ', product)
+        print('Average execution time to find the pair with the maximum product: ', (end_time - start_time), 'seconds')
         
         print('-' * 50)
         
         start_time = time.time()
-        for _ in range(50):
-            sorted_list = quick_sort(list_words)
-            # print(sorted_list)
+        # print('The set is: ', set)
+        for _ in range(1000):
+            pair, product = max_product_NlogN(set)
         end_time = time.time()
-        print('Average execution time to sort the list (quick sort): ', (end_time - start_time), 'seconds')
+        print('The pair is: ', pair, ' and the product is: ', product)
+        print('Average execution time to find the pair with the maximum product: ', (end_time - start_time), 'seconds')
         
         print('-' * 50)
+        
+        start_time = time.time()
+        # print('The set is: ', set)
+        for _ in range(1000):
+            pair, product = max_product_N(set)
+        end_time = time.time()
+        print('The pair is: ', pair, ' and the product is: ', product)
+        print('Average execution time to find the pair with the maximum product: ', (end_time - start_time), 'seconds')
+        
         
 def bubble_sort(arr):
     n = len(arr)
@@ -116,6 +147,54 @@ def quick_sort(arr):
         else:
             right.append(word)
     return quick_sort(left) + middle + quick_sort(right)
+
+def generate_set():
+    positive_numbers = set(random.sample(range(1, 1000), 300))
+    negative_numbers = set(-i for i in random.sample(range(1, 1000), 300))
+    return positive_numbers.union(negative_numbers)
+
+def max_product_Ne2(numbers):
+    max_product = float('-inf')
+    max_pair = None
+
+    for i in numbers:
+        for j in numbers:
+            if i != j:
+                product = i * j
+                if product > max_product:
+                    max_product = product
+                    max_pair = (i, j)
+
+    return max_pair, max_product
+
+def max_product_NlogN(numbers):
+    numbers = quick_sort(list(map(lambda x: x, numbers)))
+    if numbers[-1] * numbers[-2] > numbers[0] * numbers[1]:
+        return (numbers[-1], numbers[-2]), numbers[-1] * numbers[-2]
+    else:
+        return (numbers[0], numbers[1]), numbers[0] * numbers[1]
+
+def max_product_N(numbers):
+    min1 = min2 = float('-inf')
+    max1 = max2 = float('inf')
+
+    for n in numbers:
+        if n < max1:
+            max2 = max1
+            max1 = n
+        elif n < max2:
+            max2 = n
+
+        if n > min1:
+            min2 = min1
+            min1 = n
+        elif n > min2:
+            min2 = n
+
+    if max1 * max2 > min1 * min2:
+        return (max1, max2), max1 * max2
+    else:
+        return (min1, min2), min1 * min2
 
 def main():
     handler()
