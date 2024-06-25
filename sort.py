@@ -38,6 +38,24 @@ def handler():
         
         # print('-' * 50)
 
+        start_time = time.time()
+        for _ in range(50):
+            sorted_list = shell_sort(list_words)
+            # print(sorted_list)
+        end_time = time.time()
+        print('Average execution time to sort the list (shell sort): ', (end_time - start_time), 'seconds')
+        
+        print('-' * 50)
+        
+        start_time = time.time()
+        for _ in range(50):
+            sorted_list = quick_sort(list_words)
+            # print(sorted_list)
+        end_time = time.time()
+        print('Average execution time to sort the list (quick sort): ', (end_time - start_time), 'seconds')
+        
+        print('-' * 50)
+        
 def bubble_sort(arr):
     n = len(arr)
     for i in range(n):
@@ -65,6 +83,39 @@ def save_sort(arr):
                 min_index = j
         arr[i], arr[min_index] = arr[min_index], arr[i]
     return arr
+
+def shell_sort(arr):
+    n = len(arr)
+    gap = n // 2
+
+    while gap > 0:
+        for i in range(gap, n):
+            temp = arr[i]
+            j = i
+            while j >= gap and arr[j - gap] > temp:
+                arr[j] = arr[j - gap]
+                j -= gap
+            arr[j] = temp
+        gap //= 2
+
+    return arr
+
+def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = []
+    middle = []
+    right = []
+
+    for word in arr:
+        if word < pivot:
+            left.append(word)
+        elif word == pivot:
+            middle.append(word)
+        else:
+            right.append(word)
+    return quick_sort(left) + middle + quick_sort(right)
 
 def main():
     handler()
