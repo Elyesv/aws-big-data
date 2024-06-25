@@ -57,35 +57,39 @@ def handler():
         
         # print('-' * 50)
         
-        start_time = time.time()
-        set = generate_set()
-        # print('The set is: ', set)
-        for _ in range(1000):
-            pair, product = max_product_Ne2(set)
-        end_time = time.time()
-        print('The pair is: ', pair, ' and the product is: ', product)
-        print('Average execution time to find the pair with the maximum product: ', (end_time - start_time), 'seconds')
+        # start_time = time.time()
+        # set = generate_set()
+        # # print('The set is: ', set)
+        # for _ in range(1000):
+        #     pair, product = max_product_Ne2(set)
+        # end_time = time.time()
+        # print('The pair is: ', pair, ' and the product is: ', product)
+        # print('Average execution time to find the pair with the maximum product: ', (end_time - start_time), 'seconds')
+        
+        # print('-' * 50)
+        
+        # start_time = time.time()
+        # # print('The set is: ', set)
+        # for _ in range(1000):
+        #     pair, product = max_product_NlogN(set)
+        # end_time = time.time()
+        # print('The pair is: ', pair, ' and the product is: ', product)
+        # print('Average execution time to find the pair with the maximum product: ', (end_time - start_time), 'seconds')
+        
+        # print('-' * 50)
+        
+        # start_time = time.time()
+        # # print('The set is: ', set)
+        # for _ in range(1000):
+        #     pair, product = max_product_N(set)
+        # end_time = time.time()
+        # print('The pair is: ', pair, ' and the product is: ', product)
+        # print('Average execution time to find the pair with the maximum product: ', (end_time - start_time), 'seconds')
         
         print('-' * 50)
         
-        start_time = time.time()
-        # print('The set is: ', set)
-        for _ in range(1000):
-            pair, product = max_product_NlogN(set)
-        end_time = time.time()
-        print('The pair is: ', pair, ' and the product is: ', product)
-        print('Average execution time to find the pair with the maximum product: ', (end_time - start_time), 'seconds')
-        
-        print('-' * 50)
-        
-        start_time = time.time()
-        # print('The set is: ', set)
-        for _ in range(1000):
-            pair, product = max_product_N(set)
-        end_time = time.time()
-        print('The pair is: ', pair, ' and the product is: ', product)
-        print('Average execution time to find the pair with the maximum product: ', (end_time - start_time), 'seconds')
-        
+        result = recursive_multiply(5, 3)
+        print('The result of the multiplication is: ', result)
         
 def bubble_sort(arr):
     n = len(arr)
@@ -195,6 +199,12 @@ def max_product_N(numbers):
         return (max1, max2), max1 * max2
     else:
         return (min1, min2), min1 * min2
+
+def recursive_multiply(a, b):
+    if b == 0:
+        return 0
+    else:
+        return a + recursive_multiply(a, b - 1)
 
 def main():
     handler()
